@@ -5,7 +5,7 @@ import linkedin from "react-linkedin-login-oauth2/assets/linkedin.png";
 
 function LinkedInPage() {
   const { linkedInLogin } = useLinkedIn({
-    clientId: "86oayylula65bn",
+    clientId: process.env.REACT_APP_CLIENT_ID,
     redirectUri: `${window.location.origin}/linkedin`,
     onSuccess: (code) => {
       console.log(code);
