@@ -19,7 +19,7 @@ describe('Test Handlers', function () {
 
     test('responds to /linkedin_token', () => {
        
-        const req = { params: { code: 'Bob', state: '1234567' }  };
+        const req = { query: { code: 'Bob', state:  Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)  }  };
 
         const res = { text: '',
             send: function(input) { this.text = input } 

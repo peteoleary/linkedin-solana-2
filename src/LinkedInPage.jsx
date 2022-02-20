@@ -2,24 +2,34 @@ import React from "react";
 import styled from "styled-components";
 import { useLinkedIn } from "react-linkedin-login-oauth2";
 import linkedin from "react-linkedin-login-oauth2/assets/linkedin.png";
+import request from 'superagent'
+import ProfileCard from "./ProfileCard";
+import req from "express/lib/request";
 
 function LinkedInPage() {
   const { linkedInLogin } = useLinkedIn({
     clientId: process.env.REACT_APP_CLIENT_ID,
     redirectUri: `${window.location.origin}/linkedin`,
     onSuccess: (code) => {
-      console.log(code);
-      setCode(code);
-      setErrorMessage("");
+      console.log(`onSuccess ${code}`);
+      request.get('/linkedin_token').query({code: code, state: '123456'}).then(res => {
+        setProfile({
+          firstName: res.body.localizedFirstName,
+          lastName: res.body.localizedLastName,
+          profileURL: `https://www.linkedin.com/in/${res.body.id}`,
+          pictureURL: res.body.profilePicture['displayImage~'].elements.slice(-1)[0].identifiers[0].identifier
+        });
+      })
+      
     },
     scope: "r_emailaddress r_liteprofile",
     onError: (error) => {
       console.log(error);
-      setCode("");
+      setProfile(null);
       setErrorMessage(error.errorMessage);
     },
   });
-  const [code, setCode] = React.useState("");
+  const [profile, setProfile] = React.useState(null);
   const [errorMessage, setErrorMessage] = React.useState("");
 
   return (
@@ -31,21 +41,15 @@ function LinkedInPage() {
         style={{ maxWidth: "180px", cursor: "pointer" }}
       />
 
-      {!code && <div>No code</div>}
-      {code && (
+      {!profile && <div>No profile</div>}
+      {profile && (
         <div>
-          <div>Authorization Code: {code}</div>
-          <div>
-            Follow{" "}
-            <Link
-              target="_blank"
-              href="https://docs.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow?context=linkedin%2Fconsumer%2Fcontext&tabs=HTTPS#step-3-exchange-authorization-code-for-an-access-token"
-              rel="noreferrer"
-            >
-              this
-            </Link>{" "}
-            to continue
-          </div>
+           <ProfileCard
+                firstName={profile.firstName}
+                lastName={profile.lastName}
+                profileURL={profile.profileURL}
+                pictureURL={profile.pictureURL}
+              />
         </div>
       )}
       {errorMessage && <div>{errorMessage}</div>}

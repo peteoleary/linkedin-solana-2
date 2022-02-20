@@ -15,12 +15,17 @@ function requestAccessToken(code,state) {
 }
 
 function requestProfile(token) {
-    return request.get('https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~digitalmediaAsset:playableStreams))')
+    return request.get('https://api.linkedin.com/v2/me?projection=(id,vanityName,localizedFirstName,localizedLastName,profilePicture(displayImage~digitalmediaAsset:playableStreams))')
     .set('Authorization', `Bearer ${token}`)
 }
 
+function requestEmail(token) {
+  return request.get('https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))')
+  .set('Authorization', `Bearer ${token}`)
+}
+
 function linkedin_token(req, res) {
-    return requestAccessToken(req.params.code,req.params.state)
+    return requestAccessToken(req.query.code,req.query.state)
     .then((response) => {
       requestProfile(response.body.access_token)
       .then(response => {

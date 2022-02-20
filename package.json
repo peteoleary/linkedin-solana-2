@@ -23,6 +23,7 @@
         "clean": "shx rm -rf dist .parcel-cache",
         "build": "yarn clean && parcel build src/index.html",
         "dev": "yarn clean && parcel src/index.html",
+        "watch": "yarn clean && parcel watch src/index.html",
         "start": "yarn run build && node server/index.js",
         "fmt": "prettier --write '{*,**/*}.{js,ts,jsx,tsx,json}'",
         "lint": "eslint . && prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'",
@@ -62,10 +63,14 @@
         "eslint-plugin-react-hooks": "^4.3.0",
         "jest": "^27.5.1",
         "parcel": "^2.3.1",
+        "path-browserify": "^1.0.1",
         "prettier": "^2.5.1",
+        "querystring-es3": "^0.2.1",
         "shx": "^0.3.4",
+        "stream-http": "^3.2.0",
         "superagent-mock": "^4.0.0",
         "tslib": "^2.3.1",
-        "typescript": "^4.5.4"
+        "typescript": "^4.5.4",
+        "url": "^0.11.0"
     }
 }
