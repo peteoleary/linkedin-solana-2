@@ -74,11 +74,11 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     return (
         <div>{
             existingMetadata.map((meta) => {
-                <div>Existing stuff</div>
+                return (<div>Existing stuff</div>)
             })
         }
         {
-        <button onClick={onClick} disabled={!publicKey}>
+        <button onClick={onClick} disabled={!publicKey || props.profile == null}>
             Send 1 lamport to a random address!
         </button>
         
