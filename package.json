@@ -1,5 +1,5 @@
 {
-    "name": "LinkedIn Solana NFT Generatorr",
+    "name": "linkedin-solana-nft-generatorr",
     "version": "0.1.0",
     "author": "Peter O'Leary <pete@timelight.com>",
     "repository": "https://github.com/peteoleary/linkedin-solana-2",
@@ -31,6 +31,7 @@
         "nuke": "shx rm -rf node_modules yarn.lock"
     },
     "dependencies": {
+        "@metaplex/js": "^4.12.0",
         "@solana/wallet-adapter-base": "^0.9.3",
         "@solana/wallet-adapter-react": "^0.15.3",
         "@solana/wallet-adapter-react-ui": "^0.9.5",

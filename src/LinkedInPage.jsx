@@ -4,21 +4,25 @@ import { useLinkedIn } from "react-linkedin-login-oauth2";
 import linkedin from "react-linkedin-login-oauth2/assets/linkedin.png";
 import request from 'superagent'
 import ProfileCard from "./ProfileCard";
-import req from "express/lib/request";
 
-function LinkedInPage() {
+function LinkedInPage({setProfileCallback}) {
+
   const { linkedInLogin } = useLinkedIn({
     clientId: process.env.REACT_APP_CLIENT_ID,
     redirectUri: `${window.location.origin}/linkedin`,
     onSuccess: (code) => {
       console.log(`onSuccess ${code}`);
+      // TODO: pass in an actual state value here
       request.get('/linkedin_token').query({code: code, state: '123456'}).then(res => {
-        setProfile({
+        const profile = {
+          id: res.body.id,
           firstName: res.body.localizedFirstName,
           lastName: res.body.localizedLastName,
           profileURL: `https://www.linkedin.com/in/${res.body.id}`,
           pictureURL: res.body.profilePicture['displayImage~'].elements.slice(-1)[0].identifiers[0].identifier
-        });
+        }
+        setProfileCallback(profile)
+        setProfile(profile);
       })
       
     },

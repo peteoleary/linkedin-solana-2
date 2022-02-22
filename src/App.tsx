@@ -11,12 +11,13 @@ import {
     TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
-import React, { FC, ReactNode, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo, useCallback, useState } from 'react';
 
 import LinkedInPage from "./LinkedInPage.jsx";
 import { LinkedInCallback } from "react-linkedin-login-oauth2";
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { MintNFTButton } from './MintNFTButton';
 
 const App: FC = () => {
 
@@ -72,9 +73,17 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const Content: FC = () => {
+
+    const [profile, setProfile] = useState(null);
+
+    const setProfileCallback = useCallback((profile) => {
+        setProfile(profile);
+      }, []);
+
     return ( <div>
         <WalletMultiButton />
-        <LinkedInPage />
+        <LinkedInPage setProfileCallback={setProfileCallback}/>
+        <MintNFTButton profile={profile} />
         </div>
         );
 };
