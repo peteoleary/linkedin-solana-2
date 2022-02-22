@@ -18,6 +18,7 @@ import { LinkedInCallback } from "react-linkedin-login-oauth2";
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MintNFTButton } from './MintNFTButton';
+import { MetaplexNFTDisplay } from './MetaplexNFTDisplay.tsx';
 
 const App: FC = () => {
 
@@ -84,6 +85,7 @@ const Content: FC = () => {
         <WalletMultiButton />
         <LinkedInPage setProfileCallback={setProfileCallback}/>
         <MintNFTButton profile={profile} />
+        <MetaplexNFTDisplay />
         </div>
         );
 };
