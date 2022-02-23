@@ -1,19 +1,29 @@
-import React, { FC, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { FC, useMemo, useEffect, useState } from 'react';
 import {Card} from "react-bootstrap"
+import { programs } from '@metaplex/js';
+import request from 'superagent'
 
-interface MetaplexNFTData {
-
+interface CardData {
+    metadata: programs.metadata.Metadata;
 }
 
-export const MetaplexNFTCard: FC<MetaplexNFTData> = (props) => {
+export const MetaplexNFTCard: FC<CardData> = (props) => {
+
+    const [jsonData, setJsonData] = useState(null)
+
+   useEffect(() => {
+        request.get(props.metadata.data.data.uri).then((results) => {
+            setJsonData(results.text)
+        })
+   }, [props.metadata.data.data.uri])
+
     return (
         <Card style={{ width: '18rem' }}>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-                <Card.Title>Card Title</Card.Title>
+                <Card.Title>{props.metadata.data.data.symbol}</Card.Title>
                 <Card.Text>
-                Some quick example text to build on the card title and make up the bulk of
-                the card's content.
+                {jsonData}
                 </Card.Text>
             </Card.Body>
         </Card>

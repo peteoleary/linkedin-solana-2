@@ -13,12 +13,14 @@ import {
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useCallback, useState } from 'react';
 
-import LinkedInPage from "./LinkedInPage.jsx";
+import LinkedInPage from "./LinkedInPage";
 import { LinkedInCallback } from "react-linkedin-login-oauth2";
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MintNFTButton } from './MintNFTButton';
-import { MetaplexNFTDisplay } from './MetaplexNFTDisplay.tsx';
+import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
+
+import {Dropdown} from "react-bootstrap"
 
 const App: FC = () => {
 
@@ -43,7 +45,8 @@ const Body: FC = () => {
 
 const Context: FC<{ children: ReactNode }> = ({ children }) => {
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-    const network = WalletAdapterNetwork.Devnet;
+
+    const [network, setNetwork] = useState(WalletAdapterNetwork.Devnet)
 
     // You can also provide a custom RPC endpoint.
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -64,8 +67,30 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
         [network]
     );
 
+    const handleSelect = (eventKey, e) => {
+        switch (eventKey) {
+            case 'localhost':
+                setNetwork('http://127.0.0.1:8899')
+                break;
+            default:
+                setNetwork(eventKey);
+                break;
+        }
+      }
+
     return (
         <ConnectionProvider endpoint={endpoint}>
+            <Dropdown onSelect={handleSelect}>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {network}
+            </Dropdown.Toggle>
+            <Dropdown.Menu >
+                <Dropdown.Item eventKey="localhost">Localhost</Dropdown.Item>
+                <Dropdown.Item eventKey={WalletAdapterNetwork.Devnet}>Devnet</Dropdown.Item>
+                <Dropdown.Item eventKey={WalletAdapterNetwork.Testnet}>Testnet</Dropdown.Item>
+                <Dropdown.Item eventKey={WalletAdapterNetwork.Mainnet}>Mainnet</Dropdown.Item>
+            </Dropdown.Menu>
+            </Dropdown>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>{children}</WalletModalProvider>
             </WalletProvider>
