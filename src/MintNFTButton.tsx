@@ -72,10 +72,10 @@ export const MintNFTButton: FC<MintProps> = (props) => {
               publicKey,
             ),
             createAssociatedTokenAccountInstruction(
-              userTokenAccountAddress,
-              publicKey,
-              publicKey,
-              mint.publicKey,
+                publicKey,
+                userTokenAccountAddress,
+                publicKey,
+                mint.publicKey,
             ),
             Token.createMintToInstruction(
               TOKEN_PROGRAM_ID,
@@ -89,9 +89,13 @@ export const MintNFTButton: FC<MintProps> = (props) => {
           ];
 
           const transaction  = new Transaction()
-          transaction.recentBlockhash = await (await connection.getLatestBlockhash('singleGossip')).blockhash
           transaction.feePayer = publicKey
-          transaction.add(instructions[0])
+
+          for (var i = 0; i < 4; i++) {
+            transaction.add(instructions[i])
+          }
+
+          transaction.recentBlockhash = await (await connection.getLatestBlockhash('singleGossip')).blockhash
           transaction.partialSign(mint)
 
           const signedTransaction = await signTransaction(transaction)
