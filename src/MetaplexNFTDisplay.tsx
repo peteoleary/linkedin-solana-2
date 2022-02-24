@@ -1,4 +1,3 @@
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
 import React, { FC, useCallback, useMemo, useEffect, useState } from 'react';
@@ -7,13 +6,13 @@ import {MetaplexNFTCard} from './MetaplexNFTCard'
 import { programs } from '@metaplex/js';
 const { metadata: { Metadata } } = programs;
 
-import {TOKEN_PROGRAM_ID} from './utils'
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 export const MetaplexNFTDisplay: FC = () => {
     const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
       
-      const [existingMetadata, setExistingMetadata] = useState<programs.metadata.Metadata[]>([])
+      const [existingMetadata, setExistingMetadata] = useState<programs.metadata.Metadata[]>(null)
 
       useEffect(() => {
         if (!publicKey) return
@@ -28,14 +27,16 @@ export const MetaplexNFTDisplay: FC = () => {
       const metaplexDisplay: FC = (props) => {
         return (
         <React.Fragment>
-          {existingMetadata.length == 0 && 
-              (
-                  <div className="spinner-border" role="status">
-                  <span className="sr-only">Loading...</span>
-                  </div>
-              )}
+          {!existingMetadata && ( <div className="spinner-border" role="status">
+                <span className="sr-only">Loading...</span>
+                </div>)
+          }
+          {existingMetadata && existingMetadata.length == 0 && 
+          (
+            <span className="sr-only">Nothing</span>
+          )}
       
-          {existingMetadata.length > 0 && existingMetadata.map((meta) => {
+          {existingMetadata&& existingMetadata.length > 0 && existingMetadata.map((meta) => {
                   return <MetaplexNFTCard metadata={meta}/>
               })}
         </React.Fragment>

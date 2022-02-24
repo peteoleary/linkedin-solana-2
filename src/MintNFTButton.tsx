@@ -3,6 +3,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, SystemProgram, Transaction, PublicKey } from '@solana/web3.js';
 import React, { FC, useCallback, useMemo, useEffect, useState } from 'react';
 import {Token, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, MintLayout} from '@solana/spl-token'
+
+// TODO: find an alternative way to create this instruction
 import { createAssociatedTokenAccountInstruction } from './createAssociatedTokenAccountInstruction'
 
 import { programs } from '@metaplex/js';
@@ -24,7 +26,7 @@ interface MintProps {
 
 export const MintNFTButton: FC<MintProps> = (props) => {
     const { connection } = useConnection();
-    const { publicKey, sendTransaction } = useWallet();
+    const { publicKey, sendTransaction, signTransaction } = useWallet();
 
     // spl-token createMint to create token
     // spl-token createTokenAccount to create token
@@ -34,17 +36,22 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     // check on chain to see if it already exists
 
 
-    const onClick = useCallback(async () => {
+    const onClick = useCallback(async (profile) => {
         if (!publicKey) throw new WalletNotConnectedError();
 
-        if (!props.profile) throw "LinkedIn profile is not set"
-
+        if (!profile) throw "LinkedIn profile is not set"
+        
+    
         const mint = Keypair.generate();
 
         const userTokenAccountAddress = (await PublicKey.findProgramAddress(
             [publicKey.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.publicKey.toBuffer()],
             ASSOCIATED_TOKEN_PROGRAM_ID,
         ))[0];
+
+        console.log(`publicKey = ${publicKey.toBase58()}`)
+        console.log(`mint = ${mint.publicKey.toBase58()}`)
+        console.log(`userTokenAccountAddress = ${userTokenAccountAddress.toBase58()}`)
 
         const instructions = [
             SystemProgram.createAccount({
@@ -81,19 +88,30 @@ export const MintNFTButton: FC<MintProps> = (props) => {
             // TODO: add Metaplex instructions to mint NFT
           ];
 
-          const transaction = new Transaction()
+          const transaction  = new Transaction()
+          transaction.recentBlockhash = await (await connection.getLatestBlockhash('singleGossip')).blockhash
+          transaction.feePayer = publicKey
+          transaction.add(instructions[0])
+          transaction.partialSign(mint)
 
-          // TODO: add all instructions to transaction
+          const signedTransaction = await signTransaction(transaction)
 
-        const signature = await sendTransaction(transaction, connection);
+        const rawTransaction = transaction.serialize();
+        let options = {
+            skipPreflight: true,
+            commitment: 'singleGossip'
+        };
 
-        await connection.confirmTransaction(signature, 'processed');
+        const txid = await connection.sendRawTransaction(rawTransaction, options);
+
+          // await sendTransaction(transaction, connection)
+
     }, [publicKey, sendTransaction, connection]);
 
     return (
         <div>
         {
-        <button onClick={onClick} disabled={!publicKey || props.profile == null}>
+        <button onClick={() => onClick(props.profile)} disabled={!publicKey || props.profile == null}>
             Send 1 lamport to a random address!
         </button>
         

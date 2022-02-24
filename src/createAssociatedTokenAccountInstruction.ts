@@ -25,3 +25,4 @@ export function createAssociatedTokenAccountInstruction(
         data: Buffer.alloc(0),
     })
 }
+
