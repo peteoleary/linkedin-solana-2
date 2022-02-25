@@ -628,3 +628,54 @@ export const METADATA_SCHEMA = new Map<any, any>([
 ]);
 
 export type AssetKey = { mediaExt: string; index: string };
+
+// from metaplex/js/packages/common/src/actions/metadata.ts
+
+export enum MetadataCategory {
+  Audio = 'audio',
+  Video = 'video',
+  Image = 'image',
+  VR = 'vr',
+  HTML = 'html',
+}
+
+export type Attribute = {
+  trait_type?: string;
+  display_type?: string;
+  value: string | number;
+}
+
+export type MetadataExtension = {
+  name: string;
+  symbol: string;
+
+  creators: Creator[] | null;
+  description: string;
+  // preview image absolute URI
+  image: string;
+  animation_url?: string;
+
+  attributes?: Attribute[];
+
+  // stores link to item on meta
+  external_url: string;
+
+  seller_fee_basis_points: number;
+
+  properties: {
+    files?: FileOrString[];
+    category: MetadataCategory;
+    maxSupply?: number;
+    creators?: {
+      address: string;
+      shares: number;
+    }[];
+  };
+}
+
+export type MetadataFile = {
+  uri: string;
+  type: string;
+};
+
+export type FileOrString = MetadataFile | string;

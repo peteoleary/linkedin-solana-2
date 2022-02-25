@@ -16,6 +16,10 @@ You need a to first create a LinkedIn app at https://www.linkedin.com/developers
 `yarn watch` will start Parcel
 `yarn start` in a different shell with start Express
 
+### Start test validator with copy of Metaplex Tolken Program
+
+solana-test-validator --clone metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s -u devnet
+
 ### Acknowledgements
 
 This project borrows/steals from:

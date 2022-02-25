@@ -22,6 +22,8 @@ import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
 
 import {Dropdown} from "react-bootstrap"
 
+import Arweave from 'arweave'
+
 const App: FC = () => {
 
     return (
@@ -49,8 +51,8 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
     const [network, setNetwork] = useState(WalletAdapterNetwork.Devnet)
 
     // You can also provide a custom RPC endpoint.
-    // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    const endpoint = 'http://127.0.0.1:8899'
+    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    // const endpoint = 'http://127.0.0.1:8899'
 
     // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking and lazy loading --
     // Only the wallets you configure here will be compiled into your application, and only the dependencies
@@ -68,7 +70,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
         [network]
     );
 
-    const handleSelect = (eventKey, e) => {
+    const handleSelect = (eventKey: string, e: any) => {
         switch (eventKey) {
             case 'localhost':
                 setNetwork('http://127.0.0.1:8899')
@@ -101,6 +103,24 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 
 const Content: FC = () => {
 
+    const arweave_production_params = {
+        host: 'arweave.net',// Hostname or IP address for a Arweave host
+        port: 443,          // Port
+        protocol: 'https',  // Network protocol http or https
+        timeout: 20000,     // Network request timeouts in milliseconds
+        logging: false,     // Enable network request logging
+    }
+
+    const arweave_local_params = {
+        host: 'localhost',// Hostname or IP address for a Arweave host
+        port: 1984,          // Port
+        protocol: 'http',  // Network protocol http or https
+        timeout: 20000,     // Network request timeouts in milliseconds
+        logging: true,     // Enable network request logging
+    }
+
+    const arweave =  useMemo(() => Arweave.init(arweave_production_params), []);
+
     const [profile, setProfile] = useState(null);
 
     const setProfileCallback = useCallback((profile) => {
@@ -110,8 +130,8 @@ const Content: FC = () => {
     return ( <div>
         <WalletMultiButton />
         <LinkedInPage setProfileCallback={setProfileCallback}/>
-        <MintNFTButton profile={profile} />
-        <MetaplexNFTDisplay />
+        <MintNFTButton profile={profile} arweave={arweave} />
+        <MetaplexNFTDisplay arweave={arweave} />
         </div>
         );
 };

@@ -1,7 +1,7 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, SystemProgram, Transaction, PublicKey } from '@solana/web3.js';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {Token, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, MintLayout} from '@solana/spl-token'
 
 // TODO: find an alternative way to create this instruction
@@ -10,7 +10,10 @@ import { createAssociatedTokenAccountInstruction } from './createAssociatedToken
 import { programs } from '@metaplex/js';
 const { metadata: { Metadata } } = programs;
 
-import {DEFAULT_TIMEOUT, Data, createMetadata, Creator, awaitTransactionSignatureConfirmation, getErrorForTransaction} from './utils'
+import Arweave from 'arweave/node/common';
+
+import {DEFAULT_TIMEOUT, Data, createMetadata, Creator, awaitTransactionSignatureConfirmation, getErrorForTransaction, MetadataExtension} from './utils'
+import { MetadataDataData } from '@metaplex-foundation/mpl-token-metadata';
 
 interface LinkedinProfile {
     id: string,
@@ -22,6 +25,7 @@ interface LinkedinProfile {
 
 interface MintProps {
     profile: LinkedinProfile;
+    arweave: Arweave
   }  
 
 // metaplex/js/packages/cli/src/commands/mint-nft.ts or metaplex/js/packages/candy-machine-ui/src/candy-machine.ts
@@ -30,9 +34,8 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     const { connection } = useConnection();
     const { publicKey, sendTransaction, signTransaction } = useWallet();
 
-    // spl-token createMint to create token
-    // spl-token createTokenAccount to create token
-    // mintTo
+    const [arweave, setArweave] = useState(props.arweave)
+
     // make PDA for account with `['metadata', metadata_program_id, your_mint_id]` relative to the `metadata_program_id`.
     // create_metadata_account
     // check on chain to see if it already exists
@@ -41,11 +44,26 @@ export const MintNFTButton: FC<MintProps> = (props) => {
         return 'XXXX'
     } 
 
+    const uploadJsonToArweave = async (json_string: string) => {
+        let transaction = await arweave.createTransaction( {data: json_string} )
+        await arweave.transactions.sign(transaction)
+
+        let uploader = await arweave.transactions.getUploader(transaction)
+
+      /* TODO: don't get stuck here */
+        while (!uploader.isComplete) {
+            await uploader.uploadChunk()
+            console.log(
+            `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`,
+            )
+        }
+        return transaction.id
+    }
+
     const onClick = useCallback(async (profile) => {
         if (!publicKey) throw new WalletNotConnectedError();
 
         if (!profile) throw "LinkedIn profile is not set"
-        
     
         const mint = Keypair.generate();
 
@@ -91,23 +109,44 @@ export const MintNFTButton: FC<MintProps> = (props) => {
               1,
             )
         ]
-            const creator = new Creator({address: publicKey.toBase58(), verified: false, share: 100.0})
+        const creator = new Creator({address: publicKey.toBase58(), verified: false, share: 100.0})
 
-          // TODO: add Metaplex instructions to mint NFT
+        const on_chain_data = {
+            symbol: `${makeDefaultSymbol(profile)}`,
+            name: `${profile.firstName} ${profile.lastName}`,
+            uri: ' '.repeat(64), // size of url for arweave
+            sellerFeeBasisPoints: 0.0,
+            creators: [creator],
+            }
+
+        let off_chain_data = Object.assign({}, on_chain_data, {uri: undefined});
+
+        // TODO: make a copy into Arweave of the image
+        off_chain_data.image = profile.pictureURL
+
+        const off_chain_data_json = JSON.stringify(off_chain_data)
+
+        // TODO: fill out other off_chain_data data, push to arweave then put arweave uri into on_chain_data.uri
+
+        const arweave_transaction_id = await uploadJsonToArweave(off_chain_data_json)
+
+        // TODO: get actual arweave URI here
+        on_chain_data.uri = `${arweave.api.config.protocol}://${arweave.api.config.host}:${arweave.api.config.port}/${arweave_transaction_id}`
+
+        console.log(`on_chain_data.uri: ${on_chain_data.uri}`)
+
           const metadataAccount = await createMetadata(
-            new Data({
-              symbol: `${makeDefaultSymbol(profile)}`,
-              name: `${profile.firstName} ${profile.lastName}`,
-              uri: ' '.repeat(64), // size of url for arweave
-              sellerFeeBasisPoints: 0.0,
-              creators: [creator],
-            }),
+            new Data(on_chain_data),
             publicKey.toBase58(),
             mint.publicKey.toBase58(),
             publicKey.toBase58(),
             instructions,
             publicKey.toBase58()
           );
+
+          console.log(`metadataAccount: ${metadataAccount}`)
+
+          // TODO: all of the transaction stuff should be broken out into utils
 
           const transaction  = new Transaction()
           transaction.feePayer = publicKey
@@ -134,21 +173,21 @@ export const MintNFTButton: FC<MintProps> = (props) => {
         let slot = 0;
 
         const confirmation = await awaitTransactionSignatureConfirmation(
-        txid,
-        DEFAULT_TIMEOUT,
-        connection,
-        'recent',
+            txid,
+            DEFAULT_TIMEOUT,
+            connection,
+            'recent',
         );
 
         if (!confirmation)
-        throw new Error('Timed out awaiting confirmation on transaction');
+            throw new Error('Timed out awaiting confirmation on transaction');
         slot = confirmation?.slot || 0;
 
         if (confirmation?.err) {
-        const errors = await getErrorForTransaction(connection, txid);
+            const errors = await getErrorForTransaction(connection, txid);
 
-        console.log(errors);
-        throw new Error(`Raw transaction ${txid} failed`);
+            console.log(errors);
+            throw new Error(`Raw transaction ${txid} failed`);
         }
 
     }, [publicKey, sendTransaction, connection]);

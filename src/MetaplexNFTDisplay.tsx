@@ -8,7 +8,11 @@ const { metadata: { Metadata } } = programs;
 
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
-export const MetaplexNFTDisplay: FC = () => {
+interface MetaplexNFTDisplayProps {
+  arweave: any
+}
+
+export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexNFTDisplayProps) => {
     const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
       
@@ -24,7 +28,7 @@ export const MetaplexNFTDisplay: FC = () => {
         return connection.getTokenAccountsByOwner(publicKey!, { programId: TOKEN_PROGRAM_ID} )
       }, [publicKey]);
 
-      const metaplexDisplay: FC = (props) => {
+      const metaplexDisplay: FC<any> = (props) => {
         return (
         <React.Fragment>
           {!existingMetadata && ( <div className="spinner-border" role="status">
@@ -37,13 +41,13 @@ export const MetaplexNFTDisplay: FC = () => {
           )}
       
           {existingMetadata&& existingMetadata.length > 0 && existingMetadata.map((meta) => {
-                  return <MetaplexNFTCard metadata={meta}/>
+                  return <MetaplexNFTCard metadata={meta} />
               })}
         </React.Fragment>
         )
     }
 
     return (
-        metaplexDisplay(null)
+        metaplexDisplay()
     );
 }

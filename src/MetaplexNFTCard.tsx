@@ -25,6 +25,7 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
                 <Card.Text>
                 {jsonData}
                 </Card.Text>
+                <Card.Link href={props.metadata.data.data.uri}>{props.metadata.data.data.uri}</Card.Link>
             </Card.Body>
         </Card>
     );
