@@ -1,7 +1,7 @@
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, SystemProgram, Transaction, PublicKey } from '@solana/web3.js';
-import React, { FC, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 import {Token, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, MintLayout} from '@solana/spl-token'
 
 // TODO: find an alternative way to create this instruction
@@ -9,6 +9,8 @@ import { createAssociatedTokenAccountInstruction } from './createAssociatedToken
 
 import { programs } from '@metaplex/js';
 const { metadata: { Metadata } } = programs;
+
+import {DEFAULT_TIMEOUT, Data, createMetadata, Creator, awaitTransactionSignatureConfirmation, getErrorForTransaction} from './utils'
 
 interface LinkedinProfile {
     id: string,
@@ -34,7 +36,10 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     // make PDA for account with `['metadata', metadata_program_id, your_mint_id]` relative to the `metadata_program_id`.
     // create_metadata_account
     // check on chain to see if it already exists
-
+    
+    const makeDefaultSymbol = (profile: LinkedinProfile) => {
+        return 'XXXX'
+    } 
 
     const onClick = useCallback(async (profile) => {
         if (!publicKey) throw new WalletNotConnectedError();
@@ -85,13 +90,29 @@ export const MintNFTButton: FC<MintProps> = (props) => {
               [],
               1,
             )
-            // TODO: add Metaplex instructions to mint NFT
-          ];
+        ]
+            const creator = new Creator({address: publicKey.toBase58(), verified: false, share: 100.0})
+
+          // TODO: add Metaplex instructions to mint NFT
+          const metadataAccount = await createMetadata(
+            new Data({
+              symbol: `${makeDefaultSymbol(profile)}`,
+              name: `${profile.firstName} ${profile.lastName}`,
+              uri: ' '.repeat(64), // size of url for arweave
+              sellerFeeBasisPoints: 0.0,
+              creators: [creator],
+            }),
+            publicKey.toBase58(),
+            mint.publicKey.toBase58(),
+            publicKey.toBase58(),
+            instructions,
+            publicKey.toBase58()
+          );
 
           const transaction  = new Transaction()
           transaction.feePayer = publicKey
 
-          for (var i = 0; i < 4; i++) {
+          for (var i = 0; i < instructions.length; i++) {
             transaction.add(instructions[i])
           }
 
@@ -108,7 +129,27 @@ export const MintNFTButton: FC<MintProps> = (props) => {
 
         const txid = await connection.sendRawTransaction(rawTransaction, options);
 
-          // await sendTransaction(transaction, connection)
+        console.log(`txid=${txid}`)
+
+        let slot = 0;
+
+        const confirmation = await awaitTransactionSignatureConfirmation(
+        txid,
+        DEFAULT_TIMEOUT,
+        connection,
+        'recent',
+        );
+
+        if (!confirmation)
+        throw new Error('Timed out awaiting confirmation on transaction');
+        slot = confirmation?.slot || 0;
+
+        if (confirmation?.err) {
+        const errors = await getErrorForTransaction(connection, txid);
+
+        console.log(errors);
+        throw new Error(`Raw transaction ${txid} failed`);
+        }
 
     }, [publicKey, sendTransaction, connection]);
 
