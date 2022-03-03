@@ -115,29 +115,37 @@ const Body: FC = () => {
 
     return (
         <ConnectionProvider endpoint={endpoint}>
-            <Container>
-            <Row>
-                <Col>Network</Col>
-                <Col>Wallet</Col>
-                <Col>LinkedIn</Col>
-            </Row>
-            <Row>
-            <Col>{ networkDropdown() }</Col>
-            <Col><WalletProvider wallets={wallets} autoConnect>
-                
+            <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                <WalletMultiButton />
-                    <MintNFTButton profile={profile} arweave={arweave} />
-                <MetaplexNFTDisplay arweave={arweave} />
-               
-                </WalletModalProvider>
-           
-            </WalletProvider>
-            </Col>
-                <Col><LinkedInPage setProfileCallback={setProfileCallback}/></Col>
-            </Row>
-            
+            <Container className='container-main'>
+                <Row className='row-header'>
+                    <Col>Wallet</Col>
+                    <Col>Network</Col>
+                    <Col>LinkedIn</Col>
+                </Row>
+                <Row className='row-help'>
+                    <Col>Connect your Solana wallet</Col>
+                    <Col>Select the network to use. Note: this does not have to be the same network selected in your wallet.</Col>
+                    <Col>Connect your linked in Profile</Col>
+                </Row>
+                <Row>
+                <Col> <WalletMultiButton /></Col>
+                <Col>{ networkDropdown() }
+                   
+                </Col>
+                    <Col>
+                    <LinkedInPage setProfileCallback={setProfileCallback}/>
+                    
+                    </Col>
+                </Row>
+                <Row>
+                    <Col></Col>
+                    <Col><MetaplexNFTDisplay arweave={arweave} /></Col>
+                    <Col><MintNFTButton profile={profile} arweave={arweave} /></Col>
+                </Row>
             </Container>
+            </WalletModalProvider>
+            </WalletProvider>
         </ConnectionProvider>
     );
 };

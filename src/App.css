@@ -78,3 +78,19 @@
     to { transform: rotate(360deg); }
   }
   
+  .row-header {
+    background-color: purple;
+    color: white;
+    height: 50px;
+    vertical-align: center;
+  }
+
+  .row-help {
+    background-color: lightgray;
+    min-height: 50px;
+    vertical-align: center;
+  }
+
+  .container-main {
+    padding: 17px;
+  }
