@@ -9,12 +9,19 @@ interface CardData {
 
 export const MetaplexNFTCard: FC<CardData> = (props) => {
 
+    const isValidUri = (uri: string): boolean  => {
+        return true
+    }
+
     const [jsonData, setJsonData] = useState(null)
 
    useEffect(() => {
-        request.get(props.metadata.data.data.uri).then((results) => {
-            setJsonData(results.text)
+       if (props.metadata.data.data.uri && isValidUri(props.metadata.data.data.uri)) {
+            request.get(props.metadata.data.data.uri).then((results) => {
+                setJsonData(results.text)
         })
+       }
+        
    }, [props.metadata.data.data.uri])
 
     return (

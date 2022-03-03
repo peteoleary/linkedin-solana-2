@@ -24,6 +24,8 @@ import {Dropdown} from "react-bootstrap"
 
 import Arweave from 'arweave'
 
+import { Navbar, Container, Row, Col } from 'react-bootstrap';
+
 const App: FC = () => {
 
     return (
@@ -38,15 +40,29 @@ const App: FC = () => {
   }
 
 const Body: FC = () => {
-    return (
-        <Context>
-            <Content />
-        </Context>
-    );
-};
+    const arweave_production_params = {
+        host: 'arweave.net',// Hostname or IP address for a Arweave host
+        port: 443,          // Port
+        protocol: 'https',  // Network protocol http or https
+        timeout: 20000,     // Network request timeouts in milliseconds
+        logging: false,     // Enable network request logging
+    }
 
-const Context: FC<{ children: ReactNode }> = ({ children }) => {
-    // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
+    const arweave_local_params = {
+        host: 'localhost',// Hostname or IP address for a Arweave host
+        port: 1984,          // Port
+        protocol: 'http',  // Network protocol http or https
+        timeout: 20000,     // Network request timeouts in milliseconds
+        logging: true,     // Enable network request logging
+    }
+
+    const arweave =  useMemo(() => Arweave.init(arweave_production_params), []);
+
+    const [profile, setProfile] = useState(null);
+
+    const setProfileCallback = useCallback((profile) => {
+        setProfile(profile);
+      }, []);
 
     const [network, setNetwork] = useState(WalletAdapterNetwork.Devnet)
 
@@ -81,59 +97,49 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
         }
       }
 
-    return (
-        <ConnectionProvider endpoint={endpoint}>
+    const networkDropdown = () => {
+        return (
             <Dropdown onSelect={handleSelect}>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {network}
-            </Dropdown.Toggle>
-            <Dropdown.Menu >
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    {network}
+                </Dropdown.Toggle>
+                <Dropdown.Menu >
                 <Dropdown.Item eventKey="localhost">Localhost</Dropdown.Item>
                 <Dropdown.Item eventKey={WalletAdapterNetwork.Devnet}>Devnet</Dropdown.Item>
                 <Dropdown.Item eventKey={WalletAdapterNetwork.Testnet}>Testnet</Dropdown.Item>
                 <Dropdown.Item eventKey={WalletAdapterNetwork.Mainnet}>Mainnet</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown>
-            <WalletProvider wallets={wallets} autoConnect>
-                <WalletModalProvider>{children}</WalletModalProvider>
+        )
+    }
+
+    return (
+        <ConnectionProvider endpoint={endpoint}>
+            <Container>
+            <Row>
+                <Col>Network</Col>
+                <Col>Wallet</Col>
+                <Col>LinkedIn</Col>
+            </Row>
+            <Row>
+            <Col>{ networkDropdown() }</Col>
+            <Col><WalletProvider wallets={wallets} autoConnect>
+                
+                <WalletModalProvider>
+                <WalletMultiButton />
+                    <MintNFTButton profile={profile} arweave={arweave} />
+                <MetaplexNFTDisplay arweave={arweave} />
+               
+                </WalletModalProvider>
+           
             </WalletProvider>
+            </Col>
+                <Col><LinkedInPage setProfileCallback={setProfileCallback}/></Col>
+            </Row>
+            
+            </Container>
         </ConnectionProvider>
     );
-};
-
-const Content: FC = () => {
-
-    const arweave_production_params = {
-        host: 'arweave.net',// Hostname or IP address for a Arweave host
-        port: 443,          // Port
-        protocol: 'https',  // Network protocol http or https
-        timeout: 20000,     // Network request timeouts in milliseconds
-        logging: false,     // Enable network request logging
-    }
-
-    const arweave_local_params = {
-        host: 'localhost',// Hostname or IP address for a Arweave host
-        port: 1984,          // Port
-        protocol: 'http',  // Network protocol http or https
-        timeout: 20000,     // Network request timeouts in milliseconds
-        logging: true,     // Enable network request logging
-    }
-
-    const arweave =  useMemo(() => Arweave.init(arweave_production_params), []);
-
-    const [profile, setProfile] = useState(null);
-
-    const setProfileCallback = useCallback((profile) => {
-        setProfile(profile);
-      }, []);
-
-    return ( <div>
-        <WalletMultiButton />
-        <LinkedInPage setProfileCallback={setProfileCallback}/>
-        <MintNFTButton profile={profile} arweave={arweave} />
-        <MetaplexNFTDisplay arweave={arweave} />
-        </div>
-        );
 };
 
 export default App

@@ -196,7 +196,7 @@ export const MintNFTButton: FC<MintProps> = (props) => {
         <div>
         {
         <button onClick={() => onClick(props.profile)} disabled={!publicKey || props.profile == null}>
-            Send 1 lamport to a random address!
+            Mint LinkedIn NFT
         </button>
         
         }
