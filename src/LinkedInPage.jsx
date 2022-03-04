@@ -45,7 +45,6 @@ function LinkedInPage({setProfileCallback}) {
         style={{ maxWidth: "180px", cursor: "pointer" }}
       />
 
-      {!profile && <div>No profile</div>}
       {profile && (
         <div>
            <ProfileCard

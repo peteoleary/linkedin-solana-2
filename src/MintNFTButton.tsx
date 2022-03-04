@@ -11,9 +11,10 @@ import { programs } from '@metaplex/js';
 const { metadata: { Metadata } } = programs;
 
 import Arweave from 'arweave/node/common';
+import { uploadJsonToArweave } from './utils/arweave';
 
-import {DEFAULT_TIMEOUT, Data, createMetadata, Creator, awaitTransactionSignatureConfirmation, getErrorForTransaction, MetadataExtension} from './utils'
-import { MetadataDataData } from '@metaplex-foundation/mpl-token-metadata';
+import {DEFAULT_TIMEOUT, getErrorForTransaction, awaitTransactionSignatureConfirmation} from './utils/solana'
+import {Data, createMetadata, Creator} from './utils/metaplex'
 
 interface LinkedinProfile {
     id: string,
@@ -28,6 +29,26 @@ interface MintProps {
     arweave: Arweave
   }  
 
+  // maetaplex/js/packages/cli/src/commands/upload.ts
+  type Manifest = {
+    image: string;
+    name: string;
+    symbol: string;
+    seller_fee_basis_points: number;
+    properties: {
+      app?: {
+        name: string,
+        address: string,
+        version: string
+      },
+      files: Array<{ type: string; uri: string; hash?: string }>;
+      creators: Array<{
+        address: string;
+        share: number;
+      }>;
+    };
+  };
+
 // metaplex/js/packages/cli/src/commands/mint-nft.ts or metaplex/js/packages/candy-machine-ui/src/candy-machine.ts
 
 export const MintNFTButton: FC<MintProps> = (props) => {
@@ -41,24 +62,10 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     // check on chain to see if it already exists
     
     const makeDefaultSymbol = (profile: LinkedinProfile) => {
-        return 'XXXX'
+        return (profile.firstName.slice(0,1) + profile.lastName.slice(0,1)).toLocaleUpperCase('en-US')
     } 
 
-    const uploadJsonToArweave = async (json_string: string) => {
-        let transaction = await arweave.createTransaction( {data: json_string} )
-        await arweave.transactions.sign(transaction)
-
-        let uploader = await arweave.transactions.getUploader(transaction)
-
-      /* TODO: don't get stuck here */
-        while (!uploader.isComplete) {
-            await uploader.uploadChunk()
-            console.log(
-            `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`,
-            )
-        }
-        return transaction.id
-    }
+    
 
     const onClick = useCallback(async (profile) => {
         if (!publicKey) throw new WalletNotConnectedError();
@@ -119,10 +126,23 @@ export const MintNFTButton: FC<MintProps> = (props) => {
             creators: [creator],
             }
 
-        let off_chain_data = Object.assign({}, on_chain_data, {uri: undefined});
-
-        // TODO: make a copy into Arweave of the image
-        off_chain_data.image = profile.pictureURL
+        // let off_chain_data = Object.assign({}, on_chain_data, {uri: undefined});
+        let off_chain_data: Manifest = {
+          image: profile.pictureURL,
+          symbol: on_chain_data.symbol,
+          seller_fee_basis_points: on_chain_data.sellerFeeBasisPoints,
+          name: on_chain_data.name,
+          properties: {
+            files: [{
+              type: 'image/jpeg',
+              uri: profile.pictureURL
+            }],
+            creators: [{
+              address: creator.address.toString(),
+              share: creator.share
+            }]
+          }
+        }       
 
         const off_chain_data_json = JSON.stringify(off_chain_data)
 

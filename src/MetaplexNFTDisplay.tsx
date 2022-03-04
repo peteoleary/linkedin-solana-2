@@ -21,7 +21,7 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
       useEffect(() => {
         if (!publicKey) return
         Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => setExistingMetadata(metadata))
-      }, [publicKey]);
+      }, [publicKey, connection]);
 
     const existingAccounts = useMemo(() =>  {
         if (!publicKey) return []
@@ -32,12 +32,11 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
         return (
         <React.Fragment>
           {!existingMetadata && ( <div className="spinner-border" role="status">
-                <span className="sr-only">Loading...</span>
                 </div>)
           }
           {existingMetadata && existingMetadata.length == 0 && 
           (
-            <span className="sr-only">Nothing</span>
+            <span>Found no NFTs</span>
           )}
       
           {existingMetadata&& existingMetadata.length > 0 && existingMetadata.map((meta) => {
@@ -48,6 +47,6 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
     }
 
     return (
-        metaplexDisplay()
+        metaplexDisplay({})
     );
 }

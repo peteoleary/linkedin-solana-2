@@ -125,10 +125,10 @@ const Body: FC = () => {
                 </Row>
                 <Row className='row-help'>
                     <Col>Connect your Solana wallet</Col>
-                    <Col>Select the network to use. Note: this does not have to be the same network selected in your wallet.</Col>
+                    <Col>Select the network to use. <br />Note: this does not have to be the same network selected in your wallet.</Col>
                     <Col>Connect your linked in Profile</Col>
                 </Row>
-                <Row>
+                <Row className='row-buttons'>
                 <Col> <WalletMultiButton /></Col>
                 <Col>{ networkDropdown() }
                    
@@ -140,7 +140,7 @@ const Body: FC = () => {
                 </Row>
                 <Row>
                     <Col></Col>
-                    <Col><MetaplexNFTDisplay arweave={arweave} /></Col>
+                    <Col><MetaplexNFTDisplay arweave={arweave} key={network} /></Col>
                     <Col><MintNFTButton profile={profile} arweave={arweave} /></Col>
                 </Row>
             </Container>
