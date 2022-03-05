@@ -11,7 +11,8 @@ import {mintNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
 
 interface MintProps {
     profile: LinkedinProfile;
-    arweave: Arweave
+    arweave: Arweave,
+    selectedNFT: any // TODO: fill in type here
   }  
 
 // metaplex/js/packages/cli/src/commands/mint-nft.ts or metaplex/js/packages/candy-machine-ui/src/candy-machine.ts
@@ -21,6 +22,14 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     const { publicKey, signTransaction } = useWallet();
 
     const [arweave, setArweave] = useState(props.arweave)
+
+    const buttonMessage = (): string => {
+      if (props.selectedNFT) {
+        return "Update LinkedIn NFT"
+      } else {
+        return "Mint LinkedIn NFT"
+      }
+    }
 
     const onClick = useCallback(async (profile) => {
         if (!publicKey) throw new WalletNotConnectedError();
@@ -35,7 +44,7 @@ export const MintNFTButton: FC<MintProps> = (props) => {
         <div>
         {
         <button onClick={() => onClick(props.profile)} disabled={!publicKey || props.profile == null}>
-            Mint LinkedIn NFT
+            {buttonMessage()}
         </button>
         
         }

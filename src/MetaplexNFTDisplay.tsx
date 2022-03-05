@@ -1,6 +1,6 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
-import React, { FC, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { FC, useCallback, useMemo, useEffect, useState } from 'react'
 import {MetaplexNFTCard} from './MetaplexNFTCard'
 
 import { programs } from '@metaplex/js';
@@ -8,8 +8,11 @@ const { metadata: { Metadata } } = programs;
 
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
+import {ListGroup} from 'react-bootstrap'
+
 interface MetaplexNFTDisplayProps {
-  arweave: any
+  arweave: any,
+  nftSelected: any // callback
 }
 
 export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexNFTDisplayProps) => {
@@ -28,6 +31,10 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
         return connection.getTokenAccountsByOwner(publicKey!, { programId: TOKEN_PROGRAM_ID} )
       }, [publicKey]);
 
+      const listClicked = (which: any) => {
+        props.nftSelected(which)
+      }
+
       const metaplexDisplay: FC<any> = (props) => {
         return (
         <React.Fragment>
@@ -39,9 +46,15 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
             <span>Found no NFTs</span>
           )}
       
-          {existingMetadata&& existingMetadata.length > 0 && existingMetadata.map((meta) => {
-                  return <MetaplexNFTCard metadata={meta} />
-              })}
+          {existingMetadata&& existingMetadata.length > 0 && (
+            <ListGroup onBlur={() => listClicked(null)}>
+            { existingMetadata.map((meta) => {
+                  return <ListGroup.Item action onClick={() => listClicked(meta)}><MetaplexNFTCard metadata={meta} /></ListGroup.Item>
+              })
+              }
+              </ListGroup>
+            )
+          }
         </React.Fragment>
         )
     }

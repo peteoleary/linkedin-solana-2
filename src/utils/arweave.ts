@@ -1,4 +1,4 @@
-import Arweave from 'arweave/node/common';
+import Arweave from 'arweave';
 
 const arweave_production_params = {
     host: 'arweave.net',// Hostname or IP address for a Arweave host

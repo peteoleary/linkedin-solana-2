@@ -45,6 +45,8 @@ const Body: FC = () => {
 
     const [profile, setProfile] = useState(null);
 
+    const [selectedNFT, setSelectedNFT] = useState(null);
+
     const setProfileCallback = useCallback((profile) => {
         setProfile(profile);
       }, []);
@@ -120,13 +122,12 @@ const Body: FC = () => {
                 </Col>
                     <Col>
                     <LinkedInPage setProfileCallback={setProfileCallback}/>
-                    
                     </Col>
                 </Row>
                 <Row>
                     <Col></Col>
-                    <Col><MetaplexNFTDisplay arweave={arweave} key={network} /></Col>
-                    <Col><MintNFTButton profile={profile} arweave={arweave} /></Col>
+                    <Col><MetaplexNFTDisplay arweave={arweave} nftSelected={setSelectedNFT} key={network} /></Col>
+                    <Col><MintNFTButton profile={profile} arweave={arweave} selectedNFT={selectedNFT} /></Col>
                 </Row>
             </Container>
             </WalletModalProvider>
