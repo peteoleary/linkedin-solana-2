@@ -1,20 +1,5 @@
-import {
-  Blockhash,
-  Commitment,
-  Connection,
-  FeeCalculator,
-  RpcResponseAndContext,
-  SignatureStatus,
-  SimulatedTransactionResponse,
-  TransactionSignature,
-  Keypair, SystemProgram, Transaction, PublicKey, TransactionInstruction, SYSVAR_RENT_PUBKEY
-} from '@solana/web3.js';
-import { serialize } from 'borsh';
-import {MetadataDataData} from '@metaplex-foundation/mpl-token-metadata'
 
-import BN from 'bn.js'
-
-const log = {
+export const log = {
   error: console.log,
   warn : console.log,
   debug: console.log
@@ -27,8 +12,6 @@ const log = {
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-
 
 type UseStorageReturnValue = {
   getItem: (key: string) => string;

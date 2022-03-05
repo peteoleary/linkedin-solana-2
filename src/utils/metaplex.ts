@@ -4,9 +4,31 @@ import {
 
 import {findProgramAddress, toPublicKey} from './solana'
 
-  import { serialize } from 'borsh';
+import { serialize } from 'borsh';
+
+import BN from 'bn.js'
   
 type StringPublicKey = string;
+
+  // maetaplex/js/packages/cli/src/commands/upload.ts
+  export type Manifest = {
+    image: string;
+    name: string;
+    symbol: string;
+    seller_fee_basis_points: number;
+    properties: {
+      app?: {
+        name: string,
+        address: string,
+        version: string
+      },
+      files: Array<{ type: string; uri: string; hash?: string }>;
+      creators: Array<{
+        address: string;
+        share: number;
+      }>;
+    };
+  };
 
 export async function createMetadata(
   data: Data,

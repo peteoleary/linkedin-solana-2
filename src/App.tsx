@@ -22,7 +22,7 @@ import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
 
 import {Dropdown} from "react-bootstrap"
 
-import Arweave from 'arweave'
+import { initArweave } from './utils/arweave';
 
 import { Navbar, Container, Row, Col } from 'react-bootstrap';
 
@@ -40,23 +40,8 @@ const App: FC = () => {
   }
 
 const Body: FC = () => {
-    const arweave_production_params = {
-        host: 'arweave.net',// Hostname or IP address for a Arweave host
-        port: 443,          // Port
-        protocol: 'https',  // Network protocol http or https
-        timeout: 20000,     // Network request timeouts in milliseconds
-        logging: false,     // Enable network request logging
-    }
-
-    const arweave_local_params = {
-        host: 'localhost',// Hostname or IP address for a Arweave host
-        port: 1984,          // Port
-        protocol: 'http',  // Network protocol http or https
-        timeout: 20000,     // Network request timeouts in milliseconds
-        logging: true,     // Enable network request logging
-    }
-
-    const arweave =  useMemo(() => Arweave.init(arweave_production_params), []);
+   
+    const arweave =  useMemo(() => initArweave(), []);
 
     const [profile, setProfile] = useState(null);
 
