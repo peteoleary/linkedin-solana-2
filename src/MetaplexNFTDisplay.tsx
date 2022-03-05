@@ -49,7 +49,7 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
           {existingMetadata&& existingMetadata.length > 0 && (
             <ListGroup onBlur={() => listClicked(null)}>
             { existingMetadata.map((meta) => {
-                  return <ListGroup.Item action onClick={() => listClicked(meta)}><MetaplexNFTCard metadata={meta} /></ListGroup.Item>
+                  return <ListGroup.Item action onClick={() => listClicked(meta)}><MetaplexNFTCard metadata={meta} key={meta.pubkey.toBase58()}/></ListGroup.Item>
               })
               }
               </ListGroup>
