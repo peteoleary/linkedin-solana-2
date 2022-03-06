@@ -10,6 +10,11 @@ import BN from 'bn.js'
   
 type StringPublicKey = string;
 
+export const METADATA_PROGRAM_ID = new PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+    // 'GCUQ7oWCzgtRKnHnuJGxpr5XVeEkxYUXwTKYcqGtxLv4',
+  );
+
   // maetaplex/js/packages/cli/src/commands/upload.ts
   export type Manifest = {
     image: string;
@@ -30,6 +35,17 @@ type StringPublicKey = string;
     };
   };
 
+export const getMetadataAccount = (mintKey: PublicKey) => {
+    return findProgramAddress(
+      [
+        Buffer.from('metadata'),
+        METADATA_PROGRAM_ID.toBuffer(),
+        mintKey.toBuffer(),
+      ],
+      METADATA_PROGRAM_ID,
+    )
+}
+
 export async function createMetadata(
   data: Data,
   updateAuthority: StringPublicKey,
@@ -39,16 +55,8 @@ export async function createMetadata(
   payer: StringPublicKey,
 ) {
 
-  const metadataAccount = (
-    await findProgramAddress(
-      [
-        Buffer.from('metadata'),
-        METADATA_PROGRAM_ID.toBuffer(),
-        toPublicKey(mintKey).toBuffer(),
-      ],
-      METADATA_PROGRAM_ID,
-    )
-  )[0];
+  const metadataAccount = (await getMetadataAccount(toPublicKey(mintKey)))[0];
+
   console.log('Data', data);
   const value = new CreateMetadataArgs({ data, isMutable: true });
 
@@ -103,13 +111,26 @@ export async function createMetadata(
   return metadataAccount;
 }
 
+
+
 // exports from metaplex/js/packages/common/src/utils/ids.ts
 
-export const METADATA_PROGRAM_ID = new PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-    // 'GCUQ7oWCzgtRKnHnuJGxpr5XVeEkxYUXwTKYcqGtxLv4',
-  );
-
+export class UpdateMetadataArgs {
+    instruction: number = 1;
+    data: Data | null;
+    // Not used by this app, just required for instruction
+    updateAuthority: StringPublicKey | null;
+    primarySaleHappened: boolean | null;
+    constructor(args: {
+      data?: Data;
+      updateAuthority?: string;
+      primarySaleHappened: boolean | null;
+    }) {
+      this.data = args.data ? args.data : null;
+      this.updateAuthority = args.updateAuthority ? args.updateAuthority : null;
+      this.primarySaleHappened = args.primarySaleHappened;
+    }
+  }
 
 export class CreateMetadataArgs {
     instruction: number = 0;
@@ -296,7 +317,7 @@ export class CreateMetadataArgs {
         ],
       },
     ],
-    /*
+    
     [
       UpdateMetadataArgs,
       {
@@ -309,7 +330,7 @@ export class CreateMetadataArgs {
         ],
       },
     ],
-  
+    /*
     [
       CreateMasterEditionArgs,
       {
@@ -469,3 +490,27 @@ export class CreateMetadataArgs {
   };
   
   export type FileOrString = MetadataFile | string;
+
+  export function createUpdateMetadataInstruction(
+    metadataAccount: PublicKey,
+    payer: PublicKey,
+    txnData: Buffer,
+  ) {
+    const keys = [
+      {
+        pubkey: metadataAccount,
+        isSigner: false,
+        isWritable: true,
+      },
+      {
+        pubkey: payer,
+        isSigner: true,
+        isWritable: false,
+      },
+    ];
+    return new TransactionInstruction({
+      keys,
+      programId:       METADATA_PROGRAM_ID,
+      data: txnData,
+    });
+  }

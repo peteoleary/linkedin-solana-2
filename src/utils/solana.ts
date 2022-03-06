@@ -219,3 +219,45 @@ export function createAssociatedTokenAccountInstruction(
     })
 }
 
+export async function sendTransactionWithSigner(connection: Connection, publicKey: PublicKey, instructions: TransactionInstruction[], signTransaction) {
+    const transaction  = new Transaction()
+      transaction.feePayer = publicKey
+
+      for (var i = 0; i < instructions.length; i++) {
+        transaction.add(instructions[i])
+      }
+
+      transaction.recentBlockhash = await (await connection.getLatestBlockhash('singleGossip')).blockhash
+
+      const signedTransaction = await signTransaction(transaction)
+
+    const rawTransaction = transaction.serialize();
+    let options = {
+        skipPreflight: true,
+        commitment: 'singleGossip'
+    };
+
+    const txid = await connection.sendRawTransaction(rawTransaction, options);
+
+    console.log(`txid=${txid}`)
+
+    let slot = 0;
+
+    const confirmation = await awaitTransactionSignatureConfirmation(
+        txid,
+        DEFAULT_TIMEOUT,
+        connection,
+        'recent',
+    );
+
+    if (!confirmation)
+        throw new Error('Timed out awaiting confirmation on transaction');
+    slot = confirmation?.slot || 0;
+
+    if (confirmation?.err) {
+        const errors = await getErrorForTransaction(connection, txid);
+
+        console.log(errors);
+        throw new Error(`Raw transaction ${txid} failed`);
+    }
+}

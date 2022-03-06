@@ -7,7 +7,7 @@ const { metadata: { Metadata } } = programs;
 
 import Arweave from 'arweave/node/common';
 
-import {mintNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
+import {mintNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
 
 interface MintProps {
     profile: LinkedinProfile;
@@ -20,8 +20,6 @@ interface MintProps {
 export const MintNFTButton: FC<MintProps> = (props) => {
     const { connection } = useConnection();
     const { publicKey, signTransaction } = useWallet();
-
-    const [arweave, setArweave] = useState(props.arweave)
 
     const buttonMessage = (): string => {
       if (props.selectedNFT) {
@@ -36,7 +34,13 @@ export const MintNFTButton: FC<MintProps> = (props) => {
 
         if (!profile) throw "LinkedIn profile is not set"
     
-        mintNftySocial(props.profile, props.arweave, publicKey, connection, signTransaction)
+        if (props.selectedNFT){
+          updateNftySocial(props.selectedNFT, props.profile, props.arweave, publicKey, connection, signTransaction)
+        }
+        else {
+          mintNftySocial(props.profile, props.arweave, publicKey, connection, signTransaction)
+        }
+
 
     }, [publicKey, connection]);
 

@@ -20,7 +20,7 @@ export const initArweave = () => {
     return Arweave.init(arweave_production_params)
 }
 
-export const uploadJsonToArweave = async (arweave: Arweave, json_string: string) => {
+export const uploadJsonToArweave = async (arweave: Arweave, json_string: string): Promise<string> => {
     let transaction = await arweave.createTransaction( {data: json_string} )
     await arweave.transactions.sign(transaction)
 
@@ -33,5 +33,6 @@ export const uploadJsonToArweave = async (arweave: Arweave, json_string: string)
         `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`,
         )
     }
-    return transaction.id
+
+    return Promise.resolve(`${arweave.api.config.protocol}://${arweave.api.config.host}:${arweave.api.config.port}/${transaction.id}`)
 }
