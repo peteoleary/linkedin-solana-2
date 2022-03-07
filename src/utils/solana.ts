@@ -47,6 +47,16 @@ export const getErrorForTransaction = async (
   
   export const DEFAULT_TIMEOUT = 15000;
   
+  export const envFor = (connection: Connection): string => {
+    const endpoint = (connection as any)._rpcEndpoint;
+    const regex = /https:\/\/api.([^.]*).solana.com/;
+    const match = endpoint.match(regex);
+    if (match[1]) {
+      return match[1];
+    }
+    return 'mainnet-beta';
+  };
+  
   export const explorerLinkFor = (
     txid: TransactionSignature,
     connection: Connection,

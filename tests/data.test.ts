@@ -2,6 +2,7 @@ import { programs } from '@metaplex/js';
 import {createMetadata, Data} from '../src/utils/metaplex'
 import { AccountInfo, Keypair, PublicKey } from '@solana/web3.js';
 import {findByOwnerV2MockData} from './fixtures'
+import {updateNftySocial} from '../src/utils/mint_nfty_social'
 
 describe('Data and metadata', function () {
 
@@ -35,5 +36,8 @@ describe('Data and metadata', function () {
         
         expect(meta).not.toBe(null);
     });
+
+    test('updates existing Account', () => {
+    })
 
 });
