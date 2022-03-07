@@ -1,24 +1,29 @@
 import React, { FC, useMemo, useEffect, useState } from 'react';
-import {Card} from "react-bootstrap"
-import { programs } from '@metaplex/js';
+import {Card, Button} from "react-bootstrap"
 import request from 'superagent'
 import ReactJson from 'react-json-view'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import {mintNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
+import {Metadata} from './utils/metaplex'
+import { initArweave } from './utils/arweave';
 
 interface CardData {
-    metadata: programs.metadata.Metadata;
+    metadata: Metadata;
+    profile: LinkedinProfile
 }
 
 export const MetaplexNFTCard: FC<CardData> = (props) => {
 
+    const { connection } = useConnection();
+    const { publicKey, signTransaction } = useWallet();
+
     const isValidUri = (uri: string): boolean  => {
         let url;
-        
         try {
           url = new URL(uri);
         } catch (_) {
           return false;  
         }
-      
         return url.protocol === "http:" || url.protocol === "https:";
       }
 
@@ -31,6 +36,10 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
     }
 
     const [jsonData, setJsonData] = useState(null)
+
+    const onClick = (e, profile: LinkedinProfile) => {
+        updateNftySocial(props.metadata, props.profile, initArweave(), publicKey, connection, signTransaction)
+    }
 
    useEffect(() => {
        if (props.metadata.data.data.uri && isValidUri(props.metadata.data.data.uri)) {
@@ -57,6 +66,7 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
                 <Card.Link href={props.metadata.data.data.uri}>{props.metadata.data.data.uri}</Card.Link>
             </Card.Body>
         </Card> )}
+        {isValidNFT() && isOurNFT() && (<button onClick={(e) => onClick(e, props.profile)} disabled={!props.profile}>Update</button>)}
         </React.Fragment>
     );
 }

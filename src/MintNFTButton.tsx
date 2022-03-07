@@ -29,15 +29,19 @@ export const MintNFTButton: FC<MintProps> = (props) => {
       }
     }
 
-    const onClick = useCallback(async (profile) => {
+    const onClick = useCallback(async (event, profile) => {
+
+        event.preventDefault()
         if (!publicKey) throw new WalletNotConnectedError();
 
         if (!profile) throw "LinkedIn profile is not set"
     
         if (props.selectedNFT){
+          console.log(`updateNftySocial props.selectedNFT=${props.selectedNFT}`)
           updateNftySocial(props.selectedNFT, props.profile, props.arweave, publicKey, connection, signTransaction)
         }
         else {
+          console.log(`mintNftySocial`)
           mintNftySocial(props.profile, props.arweave, publicKey, connection, signTransaction)
         }
 
@@ -47,7 +51,7 @@ export const MintNFTButton: FC<MintProps> = (props) => {
     return (
         <div>
         {
-        <button onClick={() => onClick(props.profile)} disabled={!publicKey || props.profile == null}>
+        <button onClick={(e) => onClick(e, props.profile)} disabled={!publicKey || props.profile == null}>
             {buttonMessage()}
         </button>
         

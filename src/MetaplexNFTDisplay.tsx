@@ -4,15 +4,16 @@ import React, { FC, useCallback, useMemo, useEffect, useState } from 'react'
 import {MetaplexNFTCard} from './MetaplexNFTCard'
 
 import { programs } from '@metaplex/js';
-const { metadata: { Metadata } } = programs;
 
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 import {ListGroup} from 'react-bootstrap'
+import { LinkedinProfile } from './utils/mint_nfty_social';
 
 interface MetaplexNFTDisplayProps {
   arweave: any,
   nftSelected: any // callback
+  profile: LinkedinProfile
 }
 
 export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexNFTDisplayProps) => {
@@ -23,7 +24,10 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
 
       useEffect(() => {
         if (!publicKey) return
-        Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => setExistingMetadata(metadata))
+        programs.metadata.Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => {
+          console.log(`Metadata.findByOwnerV2=${metadata}`)
+          setExistingMetadata(metadata)
+        })
       }, [publicKey, connection]);
 
     const existingAccounts = useMemo(() =>  {
@@ -35,31 +39,25 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
         props.nftSelected(which)
       }
 
-      const metaplexDisplay: FC<any> = (props) => {
-        return (
-        <React.Fragment>
-          {!existingMetadata && ( <div className="spinner-border" role="status">
-                </div>)
-          }
-          {existingMetadata && existingMetadata.length == 0 && 
-          (
-            <span>Found no NFTs</span>
-          )}
-      
-          {existingMetadata&& existingMetadata.length > 0 && (
-            <ListGroup onBlur={() => listClicked(null)}>
-            { existingMetadata.map((meta) => {
-                  return <ListGroup.Item action onClick={() => listClicked(meta)}><MetaplexNFTCard metadata={meta} key={meta.pubkey.toBase58()}/></ListGroup.Item>
-              })
-              }
-              </ListGroup>
-            )
-          }
-        </React.Fragment>
-        )
-    }
-
     return (
-        metaplexDisplay({})
-    );
+      <React.Fragment>
+        {!existingMetadata && ( <div className="spinner-border" role="status">
+              </div>)
+        }
+        {existingMetadata && existingMetadata.length == 0 && 
+        (
+          <span>Found no NFTs</span>
+        )}
+    
+        {existingMetadata&& existingMetadata.length > 0 && (
+          <ListGroup onBlur={() => listClicked(null)}>
+          { existingMetadata.map((meta) => {
+                return <ListGroup.Item><MetaplexNFTCard profile={props.profile} metadata={meta} key={meta.pubkey.toBase58()}/></ListGroup.Item>
+            })
+            }
+            </ListGroup>
+          )
+        }
+      </React.Fragment>
+      )
 }

@@ -260,4 +260,5 @@ export async function sendTransactionWithSigner(connection: Connection, publicKe
         console.log(errors);
         throw new Error(`Raw transaction ${txid} failed`);
     }
+    return txid
 }

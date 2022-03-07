@@ -1,12 +1,12 @@
 import {
-    SystemProgram, PublicKey, TransactionInstruction, SYSVAR_RENT_PUBKEY
+    SystemProgram, PublicKey, TransactionInstruction, SYSVAR_RENT_PUBKEY, AccountInfo
   } from '@solana/web3.js';
 
-import {findProgramAddress, toPublicKey} from './solana'
+import {findProgramAddress, toPublicKey} from './solana';
 
 import { serialize } from 'borsh';
 
-import BN from 'bn.js'
+import BN from 'bn.js';
   
 type StringPublicKey = string;
 
@@ -40,7 +40,7 @@ export const getMetadataAccount = (mintKey: PublicKey) => {
       [
         Buffer.from('metadata'),
         METADATA_PROGRAM_ID.toBuffer(),
-        mintKey.toBuffer(),
+        mintKey.toBuffer()
       ],
       METADATA_PROGRAM_ID,
     )
@@ -277,6 +277,12 @@ export class CreateMetadataArgs {
       this.sellerFeeBasisPoints = args.sellerFeeBasisPoints;
       this.creators = args.creators;
     }
+  }
+
+  export class Account {
+    readonly pubkey: PublicKey;
+    readonly info: AccountInfo<Buffer>;
+    data: Data;
   }
   
   export class Metadata {

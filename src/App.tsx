@@ -22,7 +22,7 @@ import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
 
 import {Dropdown} from "react-bootstrap"
 
-import { initArweave } from './utils/arweave';
+import { initArweave } from './utils/arweave'
 
 import { Navbar, Container, Row, Col } from 'react-bootstrap';
 
@@ -126,7 +126,7 @@ const Body: FC = () => {
                 </Row>
                 <Row>
                     <Col></Col>
-                    <Col><MetaplexNFTDisplay arweave={arweave} nftSelected={setSelectedNFT} key={network} /></Col>
+                    <Col><MetaplexNFTDisplay profile={profile} arweave={arweave} nftSelected={setSelectedNFT} key={network} /></Col>
                     <Col><MintNFTButton profile={profile} arweave={arweave} selectedNFT={selectedNFT} /></Col>
                 </Row>
             </Container>

@@ -23,24 +23,30 @@ const makeDefaultSymbol = (profile: LinkedinProfile) => {
 // TODO: get proper types for existingNFT, connection and signTransaction
 export async function updateNftySocial(existingNFT: Metadata, profile: LinkedinProfile, arweave: Arweave, publicKey: PublicKey, connection: any, signTransaction: any) {
     
-    let on_chain_data = makeOnchainData(profile, existingNFT.data.creators)
+    let on_chain_data = makeOnchainData(profile, existingNFT.data.data.creators)
     // TODO: upload new image to arweave
     // TODO: hash image
-    let off_chain_data = makeOffchainData(profile, on_chain_data, existingNFT.data.creators)
+    let off_chain_data = makeOffchainData(profile, on_chain_data, existingNFT.data.data.creators)
 
     const off_chain_data_json = JSON.stringify(off_chain_data)
 
     // TODO: what do to about the OLD arweave metadata
-    on_chain_data.uri = await uploadJsonToArweave(arweave, off_chain_data_json)
+    // on_chain_data.uri = await uploadJsonToArweave(arweave, off_chain_data_json)
+    on_chain_data.uri = 'https://arweave.net:443/9p2SDs5_QmQGASG2iEvVp9oy4nyLndWntiX14z9qFI4'
+
+    console.log(`on_chain_data.uri=${on_chain_data.uri}`)
     
     // TODO: update on-chain metadata
-    const metadataAccount = (await getMetadataAccount(existingNFT.mint))[0];
+    const metadataAccount = (await getMetadataAccount(toPublicKey(existingNFT.data.mint)))[0];
 
     const value = new UpdateMetadataArgs({
         data: on_chain_data,
         updateAuthority: publicKey.toBase58(),
         primarySaleHappened: null,
       });
+
+      console.log(METADATA_SCHEMA)
+
       const txnData = Buffer.from(serialize(METADATA_SCHEMA, value));      
 
     const instructions = [
@@ -203,7 +209,11 @@ export async function mintNftySocial(profile: LinkedinProfile, arweave: Arweave,
 
       console.log(`metadataAccount: ${metadataAccount}`)
 
-      // TODO: all of the transaction stuff should be broken out into utils
-
-      sendTransactionWithSigner(connection, publicKey, instructions, signTransaction)
+      try {
+        sendTransactionWithSigner(connection, publicKey, instructions, signTransaction)
+      }
+      catch (e) {
+          // TODO: delete arweave stuff
+      }
+      
 }
