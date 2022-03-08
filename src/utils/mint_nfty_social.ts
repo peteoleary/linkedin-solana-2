@@ -1,5 +1,5 @@
 import {
-    Keypair, SystemProgram, Transaction, PublicKey
+    Keypair, SystemProgram, PublicKey
   } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, Token, MintLayout } from '@solana/spl-token'
 import {createAssociatedTokenAccountInstruction, toPublicKey, sendTransactionWithSigner} from './solana'
@@ -7,6 +7,9 @@ import {Creator, Manifest, createMetadata, Data, Metadata, createUpdateMetadataI
 import Arweave from 'arweave/node/common';
 import {uploadJsonToArweave} from './arweave'
 import { serialize } from 'borsh';
+
+import {actions} from '@metaplex/js'
+
 
 export interface LinkedinProfile {
     id: string,
@@ -19,6 +22,24 @@ export interface LinkedinProfile {
 const makeDefaultSymbol = (profile: LinkedinProfile) => {
     return (profile.firstName.slice(0,1) + profile.lastName.slice(0,1)).toLocaleUpperCase('en-US')
 } 
+
+export async function sendNftySocial(existingNFT: Metadata, recipientAddress: string, publicKey: PublicKey, connection: any, signTransaction: any) {
+
+  console.log(`sendNftySocial(existingNFT: ${existingNFT.data.mint}, recipientAddress: ${recipientAddress}`)
+
+  const instructions = [
+    SystemProgram.transfer({
+      /** Account that will transfer lamports */
+      fromPubkey: new PublicKey(existingNFT.data.mint),
+      /** Account that will receive transferred lamports */
+      toPubkey: new PublicKey(recipientAddress),
+      /** Amount of lamports to transfer */
+      lamports: 1.0
+    })
+  ];
+
+  sendTransactionWithSigner(connection, publicKey, instructions, signTransaction)
+}
 
 // TODO: get proper types for existingNFT, connection and signTransaction
 export async function updateNftySocial(existingNFT: Metadata, profile: LinkedinProfile, arweave: Arweave, publicKey: PublicKey, connection: any, signTransaction: any) {
@@ -142,6 +163,9 @@ async function makeUserTokenAccountAddress(publicKey: PublicKey, mint: PublicKey
 
 // TODO: get proper types for connection and signTransaction
 export async function mintNftySocial(profile: LinkedinProfile, arweave: Arweave, publicKey: PublicKey, connection: any, signTransaction: any) {
+
+  actions.mintNFT()
+
     const mint = Keypair.generate();
 
     const userTokenAccountAddress = (await makeUserTokenAccountAddress(publicKey, mint.publicKey))[0]

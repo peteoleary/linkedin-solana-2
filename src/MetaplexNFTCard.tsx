@@ -3,10 +3,11 @@ import {Card, Button} from "react-bootstrap"
 import request from 'superagent'
 import ReactJson from 'react-json-view'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import {mintNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
+import {sendNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
 import {Metadata} from './utils/metaplex'
 import { initArweave } from './utils/arweave';
 import { ShareModal } from './ShareModal'
+import { sendTransaction } from '@metaplex/js/lib/actions';
 
 interface CardData {
     metadata: Metadata;
@@ -61,8 +62,13 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
         
    }, [props.metadata.data.data.uri])
 
-   const handleSubmit = (val: (string | null)) => {
-    console.log(val)
+   const handleSubmit = async (val: (string | null)) => {
+    if (val && val.length > 0) {
+        await sendNftySocial(props.metadata, val, publicKey, connection, signTransaction)
+    }
+    
+    
+    // TODO: add progress indicator and completion message
     setShowModal(false)
    }
 
