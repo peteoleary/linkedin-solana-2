@@ -1,15 +1,12 @@
 import {
-    Blockhash,
     Commitment,
     Connection,
-    FeeCalculator,
-    RpcResponseAndContext,
     SignatureStatus,
-    SimulatedTransactionResponse,
     TransactionSignature,
-    Keypair, SystemProgram, Transaction, PublicKey, TransactionInstruction, SYSVAR_RENT_PUBKEY
+    SystemProgram, Transaction, PublicKey, TransactionInstruction, SYSVAR_RENT_PUBKEY
   } from '@solana/web3.js';
-  import { serialize } from 'borsh';
+
+  import {SignerWalletAdapterProps} from '@solana/wallet-adapter-base'
 
   import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
@@ -56,7 +53,7 @@ export const getErrorForTransaction = async (
     }
     return 'mainnet-beta';
   };
-  
+
   export const explorerLinkFor = (
     txid: TransactionSignature,
     connection: Connection,
@@ -229,7 +226,7 @@ export function createAssociatedTokenAccountInstruction(
     })
 }
 
-export async function sendTransactionWithSigner(connection: Connection, publicKey: PublicKey, instructions: TransactionInstruction[], signTransaction) {
+export async function sendTransactionWithSigner(connection: Connection, publicKey: PublicKey, instructions: TransactionInstruction[], signTransaction: SignerWalletAdapterProps['signTransaction']) {
     const transaction  = new Transaction()
       transaction.feePayer = publicKey
 

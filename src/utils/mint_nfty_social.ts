@@ -23,10 +23,10 @@ const makeDefaultSymbol = (profile: LinkedinProfile) => {
 // TODO: get proper types for existingNFT, connection and signTransaction
 export async function updateNftySocial(existingNFT: Metadata, profile: LinkedinProfile, arweave: Arweave, publicKey: PublicKey, connection: any, signTransaction: any) {
     
-    let on_chain_data = makeOnchainData(profile, existingNFT.data.data.creators)
+    let on_chain_data = makeOnchainData(profile, existingNFT.data.creators)
     // TODO: upload new image to arweave
     // TODO: hash image
-    let off_chain_data = makeOffchainData(profile, on_chain_data, existingNFT.data.data.creators)
+    let off_chain_data = makeOffchainData(profile, on_chain_data, existingNFT.data.creators)
 
     const off_chain_data_json = JSON.stringify(off_chain_data)
 
@@ -37,7 +37,7 @@ export async function updateNftySocial(existingNFT: Metadata, profile: LinkedinP
     console.log(`on_chain_data.uri=${on_chain_data.uri}`)
     
     // TODO: update on-chain metadata
-    const metadataAccount = (await getMetadataAccount(toPublicKey(existingNFT.data.mint)))[0];
+    const metadataAccount = (await getMetadataAccount(toPublicKey(existingNFT.mint)))[0];
 
     const value = new UpdateMetadataArgs({
         data: on_chain_data,

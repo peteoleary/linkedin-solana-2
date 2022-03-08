@@ -6,6 +6,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {mintNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
 import {Metadata} from './utils/metaplex'
 import { initArweave } from './utils/arweave';
+import { ShareModal } from './ShareModal'
 
 interface CardData {
     metadata: Metadata;
@@ -16,6 +17,8 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
 
     const { connection } = useConnection();
     const { publicKey, signTransaction } = useWallet();
+
+    const [showModal, setShowModal] = useState(false)
 
     const isValidUri = (uri: string): boolean  => {
         let url;
@@ -37,8 +40,12 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
 
     const [jsonData, setJsonData] = useState(null)
 
-    const onClick = (e, profile: LinkedinProfile) => {
+    const updateNFT = (e, profile: LinkedinProfile) => {
         updateNftySocial(props.metadata, props.profile, initArweave(), publicKey, connection, signTransaction)
+    }
+
+    const shareNFT = (e, profile: LinkedinProfile) => {
+        setShowModal(true)
     }
 
    useEffect(() => {
@@ -54,8 +61,14 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
         
    }, [props.metadata.data.data.uri])
 
+   const handleSubmit = (val: (string | null)) => {
+    console.log(val)
+    setShowModal(false)
+   }
+
     return (
         <React.Fragment>
+        <ShareModal isOpen={showModal} handleSubmit={handleSubmit} />
         {isValidNFT() && (<Card style={{ width: '18rem' }}>
             <Card.Img variant="top" src={jsonData.image} />
             <Card.Body>
@@ -66,7 +79,8 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
                 <Card.Link href={props.metadata.data.data.uri}>{props.metadata.data.data.uri}</Card.Link>
             </Card.Body>
         </Card> )}
-        {isValidNFT() && isOurNFT() && (<button onClick={(e) => onClick(e, props.profile)} disabled={!props.profile}>Update</button>)}
+        {isValidNFT() && isOurNFT() && (<button onClick={(e) => updateNFT(e, props.profile)} disabled={!props.profile}>Update</button>)}
+        {isValidNFT() && isOurNFT() && (<button onClick={(e) => shareNFT(e, props.profile)}>Share</button>)}
         </React.Fragment>
     );
 }
