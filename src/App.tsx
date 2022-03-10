@@ -16,7 +16,7 @@ import React, { FC, ReactNode, useMemo, useCallback, useState } from 'react';
 import LinkedInPage from "./LinkedInPage";
 import { LinkedInCallback } from "react-linkedin-login-oauth2";
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { MintNFTButton } from './MintNFTButton';
 import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
 
@@ -24,17 +24,18 @@ import {Dropdown} from "react-bootstrap"
 
 import { initArweave } from './utils/arweave'
 
-import { Navbar, Container, Row, Col } from 'react-bootstrap';
+import {Container, Row, Col } from 'react-bootstrap';
+
 
 const App: FC = () => {
 
     return (
         <Router>
-        <Routes>
+        <Switch>
             <Route path="/test" element={<span >Inline works</span>} />
             <Route path="/linkedin" element={<LinkedInCallback />} />
             <Route path="/" element={<Body />} />
-        </Routes>
+        </Switch>
       </Router>
     );
   }

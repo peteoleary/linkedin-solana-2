@@ -10,29 +10,25 @@ import BN from 'bn.js';
   
 type StringPublicKey = string;
 
+import { Creator } from '@metaplex-foundation/mpl-token-metadata';
+
 export const METADATA_PROGRAM_ID = new PublicKey(
     "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
     // 'GCUQ7oWCzgtRKnHnuJGxpr5XVeEkxYUXwTKYcqGtxLv4',
   );
 
   // maetaplex/js/packages/cli/src/commands/upload.ts
-  export type Manifest = {
-    image: string;
+  export type Manifest ={
     name: string;
     symbol: string;
-    seller_fee_basis_points: number;
-    properties: {
-      app?: {
-        name: string,
-        address: string,
-        version: string
-      },
-      files: Array<{ type: string; uri: string; hash?: string }>;
-      creators: Array<{
-        address: string;
-        share: number;
-      }>;
-    };
+    description: string;
+    image: string | undefined;
+    animation_url: string | undefined;
+    attributes: Attribute[] | undefined;
+    external_url: string;
+    properties: any;
+    creators: Creator[] | null;
+    sellerFeeBasisPoints: number;
   };
 
 export const getMetadataAccount = (mintKey: PublicKey) => {
@@ -140,20 +136,6 @@ export class CreateMetadataArgs {
     constructor(args: { data: Data; isMutable: boolean }) {
       this.data = args.data;
       this.isMutable = args.isMutable;
-    }
-  }
-  
-  // below here from @metaplex/js/packages/cli/src/types.ts
-  
-  export class Creator {
-    address: (PublicKey | string);
-    verified: boolean;
-    share: number;
-  
-    constructor(args: { address: (PublicKey | string); verified: boolean; share: number }) {
-      this.address = args.address;
-      this.verified = args.verified;
-      this.share = args.share;
     }
   }
   

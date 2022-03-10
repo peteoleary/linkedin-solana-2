@@ -7,17 +7,16 @@ import {sendNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nf
 import {Metadata} from './utils/metaplex'
 import { initArweave } from './utils/arweave';
 import { ShareModal } from './ShareModal'
-import { sendTransaction } from '@metaplex/js/lib/actions';
 
 interface CardData {
     metadata: Metadata;
     profile: LinkedinProfile
 }
 
-export const MetaplexNFTCard: FC<CardData> = (props) => {
+export const MetaplexNFTCard = (props: CardData) => {
 
     const { connection } = useConnection();
-    const { publicKey, signTransaction } = useWallet();
+    const wallet = useWallet();
 
     const [showModal, setShowModal] = useState(false)
 
@@ -64,7 +63,7 @@ export const MetaplexNFTCard: FC<CardData> = (props) => {
 
    const handleSubmit = async (val: (string | null)) => {
     if (val && val.length > 0) {
-        await sendNftySocial(props.metadata, val, publicKey, connection, signTransaction)
+        await sendNftySocial(props.metadata, val, connection, wallet)
     }
     
     

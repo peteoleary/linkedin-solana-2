@@ -18,22 +18,22 @@ interface MetaplexNFTDisplayProps {
 
 export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexNFTDisplayProps) => {
     const { connection } = useConnection();
-    const { publicKey, sendTransaction } = useWallet();
+    const wallet = useWallet();
       
       const [existingMetadata, setExistingMetadata] = useState<programs.metadata.Metadata[]>(null)
 
       useEffect(() => {
-        if (!publicKey) return
-        programs.metadata.Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => {
-          console.log(`Metadata.findByOwnerV2=${metadata}`)
+        if (!wallet.publicKey) return
+        programs.metadata.Metadata.findByOwnerV2(connection, wallet.publicKey!).then((metadata) => {
+          // console.log(`Metadata.findByOwnerV2=${metadata}`)
           setExistingMetadata(metadata)
         })
-      }, [publicKey, connection]);
+      }, [wallet, connection]);
 
     const existingAccounts = useMemo(() =>  {
-        if (!publicKey) return []
-        return connection.getTokenAccountsByOwner(publicKey!, { programId: TOKEN_PROGRAM_ID} )
-      }, [publicKey]);
+        if (!wallet.publicKey) return []
+        return connection.getTokenAccountsByOwner(wallet.publicKey!, { programId: TOKEN_PROGRAM_ID} )
+      }, [wallet]);
 
       const listClicked = (which: any) => {
         props.nftSelected(which)

@@ -1,6 +1,5 @@
 import React, { useState, FC } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap'
-import {programs} from '@metaplex/js'
 
 type ShareProps = {
   isOpen: boolean,
