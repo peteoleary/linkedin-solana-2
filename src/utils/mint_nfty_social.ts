@@ -10,7 +10,6 @@ import { serialize } from 'borsh';
 
 import {actions} from '@metaplex/js'
 
-
 export interface LinkedinProfile {
     id: string,
     firstName: string,
@@ -163,8 +162,6 @@ async function makeUserTokenAccountAddress(publicKey: PublicKey, mint: PublicKey
 
 // TODO: get proper types for connection and signTransaction
 export async function mintNftySocial(profile: LinkedinProfile, arweave: Arweave, publicKey: PublicKey, connection: any, signTransaction: any) {
-
-  actions.mintNFT()
 
     const mint = Keypair.generate();
 
