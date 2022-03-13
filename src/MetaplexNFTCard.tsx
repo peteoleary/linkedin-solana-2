@@ -4,10 +4,11 @@ import request from 'superagent'
 import ReactJson from 'react-json-view'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {sendNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
-import {Metadata} from './utils/metaplex'
+import {
+    Metadata,
+  } from '@oyster/common';
 import { initArweave } from './utils/arweave';
 import { ShareModal } from './ShareModal'
-import { sendTransaction } from '@metaplex/js/lib/actions';
 
 interface CardData {
     metadata: Metadata;

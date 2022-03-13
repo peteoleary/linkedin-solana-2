@@ -3,12 +3,14 @@ import {
   } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, Token, MintLayout } from '@solana/spl-token'
 import {createAssociatedTokenAccountInstruction, toPublicKey, sendTransactionWithSigner} from './solana'
-import {Creator, Manifest, createMetadata, Data, Metadata, createUpdateMetadataInstruction, getMetadataAccount, UpdateMetadataArgs, METADATA_SCHEMA} from './metaplex'
+import {Creator, Manifest, createMetadata, Data, createUpdateMetadataInstruction, getMetadataAccount, UpdateMetadataArgs, METADATA_SCHEMA} from './metaplex'
 import Arweave from 'arweave/node/common';
 import {uploadJsonToArweave} from './arweave'
 import { serialize } from 'borsh';
 
-import {actions} from '@metaplex/js'
+import {
+  Metadata,
+} from '@oyster/common';
 
 export interface LinkedinProfile {
     id: string,

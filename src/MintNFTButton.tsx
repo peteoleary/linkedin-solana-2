@@ -2,9 +2,6 @@ import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import React, { FC, useCallback, useState } from 'react';
 
-import { programs } from '@metaplex/js';
-const { metadata: { Metadata } } = programs;
-
 import Arweave from 'arweave/node/common';
 
 import {mintNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'

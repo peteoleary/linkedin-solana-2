@@ -278,38 +278,6 @@ export class CreateMetadataArgs {
       this.creators = args.creators;
     }
   }
-
-  export class Account {
-    readonly pubkey: PublicKey;
-    readonly info: AccountInfo<Buffer>;
-    data: Data;
-  }
-  
-  export class Metadata {
-    key: MetadataKey;
-    updateAuthority: PublicKey;
-    mint: PublicKey;
-    data: Data;
-    primarySaleHappened: boolean;
-    isMutable: boolean;
-    masterEdition?: PublicKey;
-    edition?: PublicKey;
-    constructor(args: {
-      updateAuthority: PublicKey;
-      mint: PublicKey;
-      data: Data;
-      primarySaleHappened: boolean;
-      isMutable: boolean;
-      masterEdition?: PublicKey;
-    }) {
-      this.key = MetadataKey.MetadataV1;
-      this.updateAuthority = args.updateAuthority;
-      this.mint = args.mint;
-      this.data = args.data;
-      this.primarySaleHappened = args.primarySaleHappened;
-      this.isMutable = args.isMutable;
-    }
-  }
   
   export const METADATA_SCHEMA = new Map<any, any>([
     [
