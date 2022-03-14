@@ -1,9 +1,8 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import React, { FC, useCallback, useMemo, useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 
-const MetaplexNFTCard = dynamic(() =>import('./MetaplexNFTCard'))
+import {MetaplexNFTCard} from './MetaplexNFTCard'
 
 import { programs } from '@metaplex/js';
 
@@ -27,7 +26,7 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
       useEffect(() => {
         if (!publicKey) return
         programs.metadata.Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => {
-          console.log(`Metadata.findByOwnerV2=${metadata}`)
+          debugger
           setExistingMetadata(metadata)
         })
       }, [publicKey, connection]);
@@ -54,7 +53,7 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
         {existingMetadata&& existingMetadata.length > 0 && (
           <ListGroup onBlur={() => listClicked(null)}>
           { existingMetadata.map((meta) => {
-                return <ListGroup.Item><MetaplexNFTCard profile={props.profile} metadata={meta} key={meta.pubkey.toBase58()}/></ListGroup.Item>
+                return <ListGroup.Item><MetaplexNFTCard profile={props.profile} metadata={meta} key={meta.pubkey.toBase58()} /></ListGroup.Item>
             })
             }
             </ListGroup>

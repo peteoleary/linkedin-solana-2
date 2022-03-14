@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useEffect, useState } from 'react';
 import {Card, Button} from "react-bootstrap"
 import request from 'superagent'
-import ReactJson from 'react-json-view'
+import ReactJson from 'react-json-view-ssr'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {sendNftySocial, updateNftySocial, LinkedinProfile} from './utils/mint_nfty_social'
 import {
