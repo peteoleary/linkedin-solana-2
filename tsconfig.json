@@ -1,17 +1,33 @@
 {
-    "include": ["src", "types"],
-    "exclude": ["node_modules"],
-    "compilerOptions": {
-        "noEmit": true,
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "jsx": "react",
-        "strict": true,
-        "strictNullChecks": false,
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "typeRoots": ["node_modules/@types"]
-    }
+  "include": [
+    "pages",
+    "types"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "strict": true,
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true
+  }
 }

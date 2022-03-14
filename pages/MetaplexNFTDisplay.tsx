@@ -1,7 +1,9 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import React, { FC, useCallback, useMemo, useEffect, useState } from 'react'
-import {MetaplexNFTCard} from './MetaplexNFTCard'
+import dynamic from 'next/dynamic'
+
+const MetaplexNFTCard = dynamic(() =>import('./MetaplexNFTCard'))
 
 import { programs } from '@metaplex/js';
 

@@ -1,4 +1,6 @@
-const { ping, linkedin_token } = require( '../server/routes');
+const ping = require( '../pages/api/ping');
+const linkedin_token = require( '../pages/api/linkedin_token');
+
 const superagent = require('superagent');
 var config = require('./superagent-mock-config');
 

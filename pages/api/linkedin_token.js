@@ -1,8 +1,4 @@
 const request = require('superagent');
-
-function ping(req, res) {
-    res.send('hello world!');
-}
   
 function requestAccessToken(code,state) {
     return request.post('https://www.linkedin.com/oauth/v2/accessToken')
@@ -23,7 +19,6 @@ function requestEmail(token) {
   return request.get('https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))')
   .set('Authorization', `Bearer ${token}`)
 }
-
 function linkedin_token(req, res) {
     return requestAccessToken(req.query.code,req.query.state)
     .then((response) => {
@@ -39,4 +34,4 @@ function linkedin_token(req, res) {
     })
 }
 
-module.exports = {ping, linkedin_token}
+module.exports = linkedin_token

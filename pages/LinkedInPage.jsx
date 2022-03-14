@@ -9,7 +9,7 @@ function LinkedInPage({setProfileCallback}) {
 
   const { linkedInLogin } = useLinkedIn({
     clientId: process.env.REACT_APP_CLIENT_ID,
-    redirectUri: `${window.location.origin}/linkedin`,
+    redirectUri: `${process.env.EXPRESS_APP_REDIRECT_URI}/linkedin`,
     onSuccess: (code) => {
       console.log(`onSuccess ${code}`);
       // TODO: pass in an actual state value here

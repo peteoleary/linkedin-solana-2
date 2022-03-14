@@ -1,4 +1,4 @@
-import './App.css';
+import './ProfileCard.module.css'
 
 import React, {Component} from 'react';
 

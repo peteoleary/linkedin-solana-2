@@ -14,9 +14,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import React, { FC, ReactNode, useMemo, useCallback, useState } from 'react';
 
 import LinkedInPage from "./LinkedInPage";
-import { LinkedInCallback } from "react-linkedin-login-oauth2";
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MintNFTButton } from './MintNFTButton';
 import { MetaplexNFTDisplay } from './MetaplexNFTDisplay'
 
@@ -24,22 +22,11 @@ import {Dropdown} from "react-bootstrap"
 
 import { initArweave } from './utils/arweave'
 
-import { Navbar, Container, Row, Col } from 'react-bootstrap';
+import { Navbar, Container, Row, Col } from 'react-bootstrap'
+
+import './App.module.css'
 
 const App: FC = () => {
-
-    return (
-        <Router>
-        <Routes>
-            <Route path="/test" element={<span >Inline works</span>} />
-            <Route path="/linkedin" element={<LinkedInCallback />} />
-            <Route path="/" element={<Body />} />
-        </Routes>
-      </Router>
-    );
-  }
-
-const Body: FC = () => {
    
     const arweave =  useMemo(() => initArweave(), []);
 

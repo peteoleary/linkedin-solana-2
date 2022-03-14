@@ -386,21 +386,6 @@ export class CreateMetadataArgs {
       },
     ],
     [
-      Metadata,
-      {
-        kind: 'struct',
-        fields: [
-          ['key', 'u8'],
-          ['updateAuthority', 'pubkeyAsString'],
-          ['mint', 'pubkeyAsString'],
-          ['data', Data],
-          ['primarySaleHappened', 'u8'], // bool
-          ['isMutable', 'u8'], // bool
-          ['editionNonce', { kind: 'option', type: 'u8' }],
-        ],
-      },
-    ],
-    [
       EditionMarker,
       {
         kind: 'struct',
