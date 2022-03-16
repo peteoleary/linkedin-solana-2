@@ -236,8 +236,6 @@ export async function sendTransactionWithSigner(connection: Connection, publicKe
 
       transaction.recentBlockhash = await (await connection.getLatestBlockhash('singleGossip')).blockhash
 
-      debugger
-
       const signedTransaction = await signTransaction(transaction)
 
     const rawTransaction = transaction.serialize();

@@ -3,8 +3,8 @@ const request = require('superagent');
 function requestAccessToken(code,state) {
     return request.post('https://www.linkedin.com/oauth/v2/accessToken')
         .send('grant_type=authorization_code')
-        .send(`redirect_uri=${process.env.EXPRESS_APP_REDIRECT_URI}`)
-        .send(`client_id=${process.env.EXPRESS_APP_CLIENT_ID}`)
+        .send(`redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}/linkedin`)
+        .send(`client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`)
         .send(`client_secret=${process.env.EXPRESS_APP_CLIENT_SECRET}`)
         .send(`code=${code}`)
         .send(`state=${state}`)
@@ -19,6 +19,7 @@ function requestEmail(token) {
   return request.get('https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))')
   .set('Authorization', `Bearer ${token}`)
 }
+
 function linkedin_token(req, res) {
     return requestAccessToken(req.query.code,req.query.state)
     .then((response) => {

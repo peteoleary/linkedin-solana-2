@@ -26,7 +26,9 @@ import { Navbar, Container, Row, Col } from 'react-bootstrap'
 
 import './App.module.css'
 
-const App: FC = () => {
+import type { NextPage } from 'next'
+
+const App: NextPage = () => {
    
     const arweave =  useMemo(() => initArweave(), []);
 

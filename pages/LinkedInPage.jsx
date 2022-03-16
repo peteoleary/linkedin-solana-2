@@ -8,12 +8,12 @@ import ProfileCard from "./ProfileCard";
 function LinkedInPage({setProfileCallback}) {
 
   const { linkedInLogin } = useLinkedIn({
-    clientId: process.env.REACT_APP_CLIENT_ID,
-    redirectUri: `${process.env.EXPRESS_APP_REDIRECT_URI}/linkedin`,
+    clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
+    redirectUri: `${process.env.NEXT_PUBLIC_REDIRECT_URI}/linkedin`,
     onSuccess: (code) => {
       console.log(`onSuccess ${code}`);
       // TODO: pass in an actual state value here
-      request.get('/linkedin_token').query({code: code, state: '123456'}).then(res => {
+      request.get('/api/linkedin_token').query({code: code, state: '123456'}).then(res => {
         const profile = {
           id: res.body.id,
           firstName: res.body.localizedFirstName,
@@ -40,7 +40,7 @@ function LinkedInPage({setProfileCallback}) {
     <Wrapper>
       <img
         onClick={linkedInLogin}
-        src={linkedin}
+        src={linkedin.src}
         alt="Log in with Linked In"
         style={{ maxWidth: "180px", cursor: "pointer" }}
       />

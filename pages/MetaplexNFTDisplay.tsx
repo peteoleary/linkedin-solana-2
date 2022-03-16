@@ -26,7 +26,6 @@ export const MetaplexNFTDisplay: FC<MetaplexNFTDisplayProps> = (props: MetaplexN
       useEffect(() => {
         if (!publicKey) return
         programs.metadata.Metadata.findByOwnerV2(connection, publicKey!).then((metadata) => {
-          debugger
           setExistingMetadata(metadata)
         })
       }, [publicKey, connection]);
